@@ -34,7 +34,10 @@ const SubmitProblem = () => {
       setSimilarProblems(similarProblems);
     } catch (err) {
       console.error('Error:', err);
-      setError(err.response?.data?.error || 'An unexpected error occurred.');
+      setError({
+        message: err.response?.data?.error || 'An unexpected error occurred.',
+        details: err.response?.data?.details || null,
+      });
     } finally {
       setLoading(false);
     }
@@ -57,7 +60,16 @@ const SubmitProblem = () => {
         </button>
       </form>
 
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      {error && (
+        <div style={{ color: 'red' }}>
+          <p>{error.message}</p>
+          {error.details && (
+            <pre style={{ whiteSpace: 'pre-wrap' }}>
+              {JSON.stringify(error.details, null, 2)}
+            </pre>
+          )}
+        </div>
+      )}
 
       {analysis && (
         <div>

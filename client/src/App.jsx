@@ -6,7 +6,7 @@ import SubmitProblem from "./components/SubmitProblem.jsx"; // Ensure you've imp
 function App() {
   return (
     <div className="App">
-      <h1>Welcome to the Math Problem Finder</h1>
+      <h1>Maple</h1>
       <SubmitProblem />
     </div>
   );
