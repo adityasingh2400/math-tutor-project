@@ -9,7 +9,7 @@ import Upload from './components/Upload';  // Import the Upload component
 function App() {
   return (
     <div className="App">
-      <h1>Welcome to the Math Problem Finder</h1>
+      <h1>Maple</h1>
       <SubmitProblem />
 
       <Upload />  {/* Include the Upload component */}
