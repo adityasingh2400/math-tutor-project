@@ -1,7 +1,7 @@
 // src/App.jsx
 
 import React from 'react';
-import SubmitProblem from './SubmitProblem.js'; // Ensure you've imported the new component
+import SubmitProblem from "./components/SubmitProblem.jsx"; // Ensure you've imported the new component
 
 function App() {
   return (
