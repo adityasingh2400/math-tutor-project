@@ -118,7 +118,7 @@ app.use('/api', apiLimiter, problemsRoutes);
 // Swagger Configuration
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '4.0.0',
     info: {
       title: 'Math Tutor API',
       version: '1.0.0',

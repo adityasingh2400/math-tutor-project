@@ -8,7 +8,7 @@ router.post('/find-similar-problems', async (req, res) => {
   try {
     const response = await axios.post('https://api.openai.com/v1/completions', {
       model: "gpt-4o", // Adjust according to available models
-      prompt: `Find math problems similar in difficulty and structure to: ${problemDescription}`,
+      prompt: `Find math problems similar in difficulty and structure and type to: ${problemDescription}`,
       max_tokens: 150
     }, {
       headers: {
