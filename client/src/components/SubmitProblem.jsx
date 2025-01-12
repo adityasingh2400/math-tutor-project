@@ -1,7 +1,6 @@
-// client/src/components/SubmitProblem.jsx
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import MathJax from 'react-mathjax';
 
 const SubmitProblem = () => {
   const [problem, setProblem] = useState('');
@@ -41,6 +40,11 @@ const SubmitProblem = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Function to format similar problems into LaTeX
+  const formatProblemForLatex = (problemText) => {
+    return `$$${problemText}$$`; // Add LaTeX math delimiters
   };
 
   return (
@@ -84,7 +88,11 @@ const SubmitProblem = () => {
           <h2>Similar Problems</h2>
           <ol>
             {similarProblems.map((problem, index) => (
-              <li key={index}>{problem}</li>
+              <li key={index}>
+                <MathJax.Provider>
+                  <MathJax.Node formula={formatProblemForLatex(problem)} />
+                </MathJax.Provider>
+              </li>
             ))}
           </ol>
         </div>
