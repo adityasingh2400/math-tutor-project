@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+// src/components/SubmitProblem.jsx
+import React, { useState } from 'react';
 import axios from 'axios';
-import MathJax from 'react-mathjax';
 
 const SubmitProblem = () => {
-  const [problem, setProblem] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [analysis, setAnalysis] = useState(null);
-  const [similarProblems, setSimilarProblems] = useState([]);
-  const [error, setError] = useState(null);
+  const [problem, setProblem] = useState(''); // State for the problem input
+  const [loading, setLoading] = useState(false); // State for loading indicator
+  const [analysis, setAnalysis] = useState(null); // State for analysis result
+  const [similarProblems, setSimilarProblems] = useState([]); // State for similar problems
+  const [error, setError] = useState(null); // State for error handling
 
+  // Handle problem submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -42,14 +43,9 @@ const SubmitProblem = () => {
     }
   };
 
-  // Function to format similar problems into LaTeX
-  const formatProblemForLatex = (problemText) => {
-    return `$$${problemText}$$`; // Add LaTeX math delimiters
-  };
-
   return (
     <div>
-      <h1>Submit Your Problem</h1>
+      <h2>Describe the type of problem you would like</h2>
       <form onSubmit={handleSubmit}>
         <textarea
           value={problem}
@@ -77,7 +73,7 @@ const SubmitProblem = () => {
 
       {analysis && (
         <div>
-          <h2>Analysis</h2>
+          <h3>Analysis</h3>
           <p><strong>Type:</strong> {analysis.type}</p>
           <p><strong>Difficulty:</strong> {analysis.difficulty}</p>
         </div>
@@ -85,14 +81,10 @@ const SubmitProblem = () => {
 
       {similarProblems.length > 0 && (
         <div>
-          <h2>Similar Problems</h2>
+          <h3>Similar Problems</h3>
           <ol>
             {similarProblems.map((problem, index) => (
-              <li key={index}>
-                <MathJax.Provider>
-                  <MathJax.Node formula={formatProblemForLatex(problem)} />
-                </MathJax.Provider>
-              </li>
+              <li key={index}>{problem}</li>
             ))}
           </ol>
         </div>

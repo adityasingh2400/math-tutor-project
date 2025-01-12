@@ -1,9 +1,9 @@
-// server/index.js
 const dotenv = require('dotenv');
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const path = require('path'); // Add this to fix the "path is not defined" error
+const path = require('path');
+const fs = require('fs'); // Add fs to check folder existence
 require('dotenv').config();
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -16,12 +16,11 @@ const errorHandler = require('./middleware/errorHandler');
 dotenv.config();
 console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY);
 
-
 const app = express();
 const PORT = process.env.PORT || 8000;
 
 // Middleware
-const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000']; // Add allowed origins here
+const allowedOrigins = ['http://localhost:5173', 'http://localhost:3000'];
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -45,6 +44,12 @@ app.get('/', (req, res) => {
   res.send('Hello from the Math Tutor API!');
 });
 
+// Ensure the 'uploads' folder exists, create it if not
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 // Configure Multer Storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -58,7 +63,7 @@ const storage = multer.diskStorage({
 // Initialize multer with the storage configuration
 const upload = multer({
   storage,
-  limits: { fileSize: 200 * 1024 * 1024 },  // 10 MB file size limit
+  limits: { fileSize: 200 * 1024 * 1024 },  // 200 MB file size limit
   fileFilter: (req, file, cb) => {
     if (file.mimetype !== 'application/pdf') {
       return cb(new Error('Only PDF files are allowed!'), false);
@@ -68,7 +73,7 @@ const upload = multer({
 });
 
 // Upload Route with Error Handling
-app.post('/upload', (req, res) => {
+app.post('/api/upload', (req, res) => { // Changed route to /api/upload
   upload.single('pdf')(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       return res.status(400).json({ message: err.message });

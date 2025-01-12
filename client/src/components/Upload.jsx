@@ -1,70 +1,88 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-function Upload() {
-  const [file, setFile] = useState(null);
-  const [fileUrl, setFileUrl] = useState('');
-  const [error, setError] = useState('');
+const Upload = () => {
+  const [file, setFile] = useState(null); // File selected for upload
+  const [localPdfUrl, setLocalPdfUrl] = useState(null); // Local preview
+  const [uploadedPdfUrl, setUploadedPdfUrl] = useState(null); // URL from server
+  const navigate = useNavigate();
 
-  // Handle file change
-  const onFileChange = (e) => {
-    setFile(e.target.files[0]);
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type === 'application/pdf') {
+      setFile(selectedFile);
+      setLocalPdfUrl(URL.createObjectURL(selectedFile)); // Create local preview
+    } else {
+      alert('Please upload a valid PDF file.');
+    }
   };
 
   // Handle file upload
-  const onFileUpload = async () => {
+  const handleFileUpload = async () => {
     if (!file) {
-      setError('Please select a file first');
+      alert('Please select a file to upload');
       return;
     }
 
     const formData = new FormData();
-    formData.append('pdf', file);
+    formData.append('pdf', file); // Key 'pdf' must match backend configuration
 
     try {
-      const response = await axios.post('http://localhost:8000/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
       });
 
-      console.log(response.data);
-      const correctedFilePath = response.data.file.path.replace(/\\/g, '/');  // Replace backslashes with forward slashes
-
-      setFileUrl(correctedFilePath);  // Set the corrected file URL
-      setError('');
+      if (response.ok) {
+        const data = await response.json();
+        setUploadedPdfUrl(data.file.path); // Update server URL for uploaded file
+        alert('File uploaded successfully!');
+      } else {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.message}`);
+      }
     } catch (err) {
-    if (err.response) {
-      setError(err.response.data.message || 'Error uploading file. Please try again.');
-    } else {
-      setError('Error uploading file. Please try again.');
+      console.error('Error during file upload:', err);
+      alert('An error occurred during upload');
     }
-    console.error(err);
-  }
-};
-    
+  };
 
-return (
-  <div>
-    <h1>Upload a PDF</h1>
-    <input type="file" onChange={onFileChange} />
-    <button onClick={onFileUpload}>Upload</button>
+  // Redirect to another page
+  const handleRedirect = () => {
+    navigate('/');
+  };
 
-    {error && <div style={{ color: 'red' }}>{error}</div>}
+  return (
+    <div>
+      <h2>Upload Your PDF</h2>
 
-    {/* Render the uploaded PDF if fileUrl is set */}
-    {fileUrl && (
-      <div>
-        <iframe
-          src={`http://localhost:8000${fileUrl}`} // Complete URL to the uploaded file
-          width="600"
-          height="400"
-          title="Uploaded PDF"
-        ></iframe>
-      </div>
-    )}
-  </div>
-);
+      {/* File input */}
+      <input
+        type="file"
+        onChange={handleFileChange}
+        accept=".pdf" // Restrict file types
+      />
+      <br />
+      <button onClick={handleFileUpload}>Upload PDF</button>
+      <br />
+      <button onClick={handleRedirect}>Go to Submit Problem</button>
+
+      {/* Local and Uploaded PDF preview */}
+      {localPdfUrl && (
+        <div style={{ marginTop: '20px' }}>
+          <h3>Preview:</h3>
+          <iframe
+            src={uploadedPdfUrl || localPdfUrl} // Show uploaded PDF if available, otherwise local preview
+            width="100%"
+            height="600px"
+            title="PDF Viewer"
+            style={{ border: 'none' }}
+          />
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Upload;
