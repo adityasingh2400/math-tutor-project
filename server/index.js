@@ -11,8 +11,6 @@ const errorHandler = require('./middleware/errorHandler');
 
 // Load environment variables from .env file
 dotenv.config();
-console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY);
-
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -39,7 +37,7 @@ app.use('/api', apiLimiter, problemsRoutes);
 // Swagger Configuration
 const options = {
   definition: {
-    openapi: '3.0.0',
+    openapi: '4.0.0',
     info: {
       title: 'Math Tutor API',
       version: '1.0.0',
